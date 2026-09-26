@@ -1,32 +1,31 @@
 # AgentHP Server
 
-AgentHP の iPhone アプリとウィジェットに、Mac 上の Codex 使用状況を渡すサーバーです。
-ソースコードはこの配布リポジトリには含まれません。
+AgentHP Server provides the Codex usage data from your Mac to the AgentHP iPhone app and widgets. This distribution repository contains binaries, not the server source code.
 
-## 必要なもの
+## Requirements
 
-- macOS の Apple Silicon または Intel Mac
-- ChatGPT アカウントでログイン済みの [Codex CLI](https://developers.openai.com/codex/cli/)
-- iPhone と Mac の両方で接続済みの Tailscale
+- An Apple Silicon or Intel Mac running macOS
+- [Codex CLI](https://developers.openai.com/codex/cli/) installed and signed in with your ChatGPT account
+- Tailscale connected on both your Mac and iPhone
 
-## インストール
+## Install and run
 
-1. [Releases](https://github.com/reirei-lab/agent-hp-server/releases) から、Apple Silicon なら `arm64`、Intel Mac なら `x64` の ZIP をダウンロードします。
-2. ZIP を展開し、ターミナルでバイナリを起動します。以下の `100.x.y.z` は Mac の Tailscale IPv4 アドレスに置き換えてください。
+1. Download the `arm64` ZIP for an Apple Silicon Mac or the `x64` ZIP for an Intel Mac from [Releases](https://github.com/reirei-lab/agent-hp-server/releases).
+2. Extract the ZIP and run the binary in Terminal. Replace `100.x.y.z` with your Mac's Tailscale IPv4 address.
 
    ```sh
    HOST=100.x.y.z PORT=8787 ./agent-hp-server-macos-arm64
    ```
 
-   Intel Mac では末尾を `./agent-hp-server-macos-x64` にします。ターミナルを閉じるとサーバーも終了します。
-3. iPhone の AgentHP アプリの設定で `http://100.x.y.z:8787` を接続先に指定します。
+   On an Intel Mac, use `./agent-hp-server-macos-x64` instead. The server stops when you close Terminal.
+3. In the AgentHP iPhone app, set the server URL to `http://100.x.y.z:8787`.
 
-Mac 上で `curl http://100.x.y.z:8787/v1/usage` を実行し、JSON が返れば接続できています。Codex CLI をインストール・ログインしたユーザーと同じmacOSユーザーでサーバーを起動してください。Mac がスリープするとウィジェットは更新できません。
+To check the connection on your Mac, run `curl http://100.x.y.z:8787/v1/usage`. It should return JSON. Run the server under the same macOS user account that installed and signed in to Codex CLI. Widgets cannot refresh while your Mac is asleep.
 
-履歴は `~/Library/Application Support/AgentHP/` に保存します。5分おきに観測し、サーバー停止中のデータは補完されません。API は `/v1/usage` と `/v1/token-usage` です。
+The server samples usage about every five minutes and stores history in `~/Library/Application Support/AgentHP/`. It cannot fill gaps while it is stopped. The API endpoints are `/v1/usage` and `/v1/token-usage`.
 
-Tailscale IPv4 アドレスへの待ち受けでは追加のアクセストークンは不要です。Tailscale 以外のアドレスで待ち受ける場合は `ACCESS_TOKEN` が必須です。公開インターネットに直接ポートを開けないでください。
+No additional access token is required when listening on a Tailscale IPv4 address. Listening on any other non-loopback address requires `ACCESS_TOKEN`. Do not expose the port directly to the public internet.
 
-各リリースの `SHA256SUMS` でダウンロードしたZIPを検証できます。
+Each release includes `SHA256SUMS` so you can verify the downloaded ZIP files.
 
-問い合わせ: hiragram+support@gmail.com
+Support: hiragram+support@gmail.com
