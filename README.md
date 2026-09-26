@@ -7,7 +7,7 @@ AgentHP Server provides the Codex usage data from your Mac to the AgentHP iPhone
 - An Apple Silicon or Intel Mac running macOS
 - [Homebrew](https://brew.sh/)
 - [Codex CLI](https://developers.openai.com/codex/cli/) installed and signed in with your ChatGPT account
-- Tailscale connected on both your Mac and iPhone
+- A network path between your Mac and iPhone (for example, Tailscale or a local network)
 
 ## Install and run
 
@@ -17,7 +17,7 @@ AgentHP Server provides the Codex usage data from your Mac to the AgentHP iPhone
    brew install reirei-lab/tap/agent-hp-server
    ```
 
-2. Start the server in Terminal. Replace `100.x.y.z` with your Mac's Tailscale IPv4 address.
+2. Start the server in Terminal. Replace `100.x.y.z` with the Mac IP address you want the server to listen on. This example uses a Tailscale IPv4 address; you can use a LAN address instead.
 
    ```sh
    HOST=100.x.y.z agent-hp-server
@@ -32,7 +32,7 @@ To check the connection on your Mac, run `curl http://100.x.y.z:8787/v1/usage`. 
 
 The server samples usage about every five minutes and stores history in `~/Library/Application Support/AgentHP/`. It cannot fill gaps while it is stopped. The API endpoints are `/v1/usage` and `/v1/token-usage`.
 
-No additional access token is required when listening on a Tailscale IPv4 address. Listening on any other non-loopback address requires `ACCESS_TOKEN`. Do not expose the port directly to the public internet.
+The API has no application-level authentication. By default, it listens only on `127.0.0.1`; setting `HOST` makes it available through the network interface you choose. Use your network's access controls or firewall to decide which devices can connect. Do not expose the port directly to the public internet.
 
 Signed and notarized binaries are also available under [Releases](https://github.com/reirei-lab/agent-hp-server/releases) for manual installation.
 
