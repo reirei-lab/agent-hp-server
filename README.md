@@ -26,6 +26,25 @@ AgentHP Server provides the Codex usage data from your Mac to the AgentHP iPhone
    The server stops when you close Terminal.
 3. In the AgentHP iPhone app, set the server URL to `http://100.x.y.z:8787`.
 
+## Keep it running after you close Terminal
+
+Homebrew can run AgentHP Server in the background and start it again when you log in to your Mac. Stop any copy you started in Terminal first, then create the service environment file with the IP address the server should listen on. Replace `100.x.y.z` with your Mac's Tailscale IPv4 address (or its LAN IP address).
+
+```sh
+mkdir -p ~/.homebrew/services
+printf 'HOST=100.x.y.z\n' > ~/.homebrew/services/agent-hp-server.env
+brew services start reirei-lab/tap/agent-hp-server
+```
+
+Run the service as the same macOS user who signed in to Codex CLI. Do not use `sudo`: that would run it under a different account. Homebrew adds its own `bin` directory to the service's `PATH`, so a Homebrew-installed `codex` command is available. If you installed Codex CLI elsewhere, add its directory to `PATH` in the same environment file and run `brew services restart reirei-lab/tap/agent-hp-server`.
+
+```sh
+brew services list
+curl http://100.x.y.z:8787/v1/usage
+```
+
+To change the IP address, edit `~/.homebrew/services/agent-hp-server.env` and run `brew services restart reirei-lab/tap/agent-hp-server`. To stop automatic startup, run `brew services stop reirei-lab/tap/agent-hp-server`. Logs are in `$(brew --prefix)/var/log/agent-hp-server.log` and `$(brew --prefix)/var/log/agent-hp-server-error.log`. The service starts at login; it cannot refresh while your Mac is asleep or turned off.
+
 To install a newer release later, run `brew update && brew upgrade reirei-lab/tap/agent-hp-server`. Homebrew verifies the download against the SHA-256 hash in the tap. You do not need Node.js or Bun to run the server.
 
 To check the connection on your Mac, run `curl http://100.x.y.z:8787/v1/usage`. It should return JSON. Run the server under the same macOS user account that installed and signed in to Codex CLI. Widgets cannot refresh while your Mac is asleep.
